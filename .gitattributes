@@ -1,0 +1,8 @@
+# Normalize to LF in the repository so Windows and Unix checkouts agree.
+# The plugin is plain ESM/YAML with no build step, so there is nothing to
+# regenerate — keeping one line ending avoids whole-file diffs on every edit.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.gif binary
+*.webp binary

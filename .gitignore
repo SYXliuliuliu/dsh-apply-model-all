@@ -1,0 +1,12 @@
+# Dependencies (not used — this plugin has none)
+node_modules/
+
+# Logs and editor noise
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+*.swp
+
+# Packed artifacts
+*.tgz

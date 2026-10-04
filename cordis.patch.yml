@@ -1,0 +1,9 @@
+# dsh-apply-model-all bundle：把「一键应用到所有会话」挂进输入框模型位旁边。
+#
+# 只 insert 一行宿主 row（提供两条 HTTP 路由做批量应用与进度查询）；
+# 客户端半边由 package.json 的 dsh.client 清单加载（往
+# conversation.input.right 这个 list slot 注一个按钮，官方模型位就在它右边，
+# 本插件不碰官方插件、不抢它的 slot）。
+- insert:
+    - id: apply-model-all
+      name: dsh-apply-model-all
