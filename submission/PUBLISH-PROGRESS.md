@@ -1,15 +1,18 @@
 # dsh-apply-model-all — 发布进度
 
-**状态（2026-10-04）**：已建仓 + 已推送 + topic 已打。**PR 未提**（等仓库满 1 天）。
+**状态（2026-10-06）**：**PR 已提交，等审核** ——
+https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/6693
 
 ## 已完成的
 
 | 步骤 | 状态 |
 |---|---|
-| 本地 git 仓库 + 2 个提交 | ✅ |
+| 本地 git 仓库 + 3 个提交 | ✅ |
 | GitHub 仓库 `SYXliuliuliu/dsh-apply-model-all`（public） | ✅ 2026-10-04T16:51:38Z |
 | 推送 master | ✅ |
 | `dsh-plugin` topic | ✅ |
+| **PR 提交**（只改 1 个文件） | ✅ PR #6693，`MERGEABLE` |
+| CI `check-submission` 本地预跑 | ✅ `all checked entries pass` |
 | `dsh.bundle` manifest 核验 | ✅（CI 的必检项） |
 | 隐私清扫 | ✅ 8 类模式零命中，git 全历史零命中 |
 | peer 范围修正 | ✅ 见下 |
@@ -53,15 +56,45 @@
 （`lib/index.js` 零 import；`lib/client.js` 只有 `require('react')`）。
 所以这四个 peer 是**声明性**的，标了 `optional: true`，不阻断安装。
 
-## 明天要做的事（一条命令级别的简单）
+## PR 已提交（2026-10-06）
 
-1. 把投稿 YAML 放进 awesome-dsh-plugin 仓库：
-   - 文件名：`data/plugins/SYXliuliuliu__dsh-apply-model-all.yml`
-   - 内容：见 `D:\DSH\plugins\dsh-apply-model-all\submission\SYXliuliuliu__dsh-apply-model-all.yml`
-2. 提 PR。**只加这一个文件**；README 是生成的，**不要手工改**。
-3. CI 会依次查：条目数 ≤3 → `dsh.bundle` → **仓库年龄 ≥1 天** → awesome-lint。
+- PR: https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/6693
+- 分支：`SYXliuliuliu:add-apply-model-all`（fork 里）
+- 改动：**只有** `data/plugins/SYXliuliuliu__dsh-apply-model-all.yml`
+- 状态：`OPEN` / `MERGEABLE` / CI `check-submission` pending
 
-其余收录条件都已满足（有真实代码、有 dsh.bundle、有 topic、描述只讲功能）。
+**送审前本地预跑了 CI 的同一个脚本**，确认它会过：
+
+```powershell
+# 在 upstream 克隆里（浅克隆即可）
+git clone --depth 1 https://github.com/awesome-dsh-plugin/awesome-dsh-plugin.git upstream
+cd upstream
+# check-submission 需要 js-yaml 与 token；本机已有 js-yaml，链接即可，不必安装
+cmd /c mklink /J "node_modules\js-yaml" "D:\.dsh\profiles\desktop\node_modules\js-yaml"
+$env:GITHUB_TOKEN = (gh auth token)
+node scripts/check-submission.mjs --only-list only.txt --base <main 的 sha> --pr-created <iso>
+# → checking 1 entry / ok <url> / all checked entries pass
+```
+
+### 踩到的两个坑（下次直接照做）
+
+1. **`--base` 单独用会「什么都没检测到」**：`changedEntryFiles()` 返回的是**仓库相对路径**
+   （`data/plugins/x.yml`），而 `entries[].file` 是**绝对路径**（`path.join(dir, f)`），
+   两者永不相等 → `targets` 为空 → 打印 "no entry files added or changed"。
+   **绕法：加 `--only-list <文件>`**（按 basename 匹配），别指望 `--base` 自己选中。
+2. **不要用 `--dir` 配 `--base`**：`--dir` 只改「从哪读条目」，目标选择仍走 `--only-list`/`--base`
+   分支；两者混用会让 diff 的相对路径对不上 `--dir` 读进来的条目，结果同样是空的。
+
+### 关于 AI 提 PR
+
+**在这个列表里是常态，没人介意。** 实锤：PR #6645 分支名 `flizzywine:codex/add-dsh-tavern-catalog`、
+#6633 `loopx-agent:codex/loopx-beta6-catalog`、#6670 `chinahhy:codex/add-tether-ios` ——
+`codex/` 前缀就是 AI agent 建的。贡献指南只查：manifest、仓库年龄、描述是否属实、分类是否贴切。
+
+### 审核队列实况（别指望当天合并）
+
+仓库共 6,534 个 PR、已合并 4,814（74%），但**当前积压 683 个待处理**，
+最近 60 个 PR 已合并数为 **0**（都还在排）。所以提完要等，属正常。
 
 ## 可选（以后再说）
 
@@ -69,3 +102,5 @@
   若发，包的 `repository` 字段必须指回本仓库。
 - **截图**：用户在仓库里放 `screenshots.json`（1-8 张、仓库相对路径），
   市场详情页就会展示。注意：CI 的 awesome-lint 会把截图列入检查项。
+  有 347 个条目用了 `tarball:` 字段，但那是**源码装不了时才必需**；
+  本插件已验证可从源码安装，故不需要。
